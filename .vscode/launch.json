@@ -1,0 +1,42 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Backend",
+      "command": "yarn dev",
+      "request": "launch",
+      "type": "node-terminal",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Debug Frontend",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:5173/",
+      "webRoot": "${workspaceFolder}/app", // Point to your "app" folder (the parent of "route" folder)
+      "sourceMaps": true
+    },
+    {
+      "name": "Debug Backend and Frontend",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "yarn dev",
+      "cwd": "${workspaceFolder}",
+      "serverReadyAction": {
+        "action": "startDebugging",
+        "pattern": "Local: +https?://.+",
+        "name": "Debug Frontend"
+      }
+    },
+    {
+      "name": "Attach by Process ID",
+      "processId": "${command:PickProcess}",
+      "request": "attach",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node"
+    }
+  ]
+}

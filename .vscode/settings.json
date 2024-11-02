@@ -1,0 +1,73 @@
+{
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": "active",
+  "workbench.colorCustomizations": {
+    "editorBracketHighlight.foreground1": "#5caeef",
+    "editorBracketHighlight.foreground2": "#dfb976",
+    "editorBracketHighlight.foreground3": "#c172d9",
+    "editorBracketHighlight.foreground4": "#4fb1bc",
+    "editorBracketHighlight.foreground5": "#97c26c",
+    "editorBracketHighlight.foreground6": "#abb2c0",
+    "editorBracketHighlight.unexpectedBracket.foreground": "#db6165",
+
+    // will change the color of three dots to red
+    "editorHint.foreground": "#db6165"
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "editor.formatOnSave": true,
+  "[javascript]": {
+    "editor.formatOnSave": false
+  },
+  "[javascriptreact]": {
+    "editor.formatOnSave": false
+  },
+  "[typescript]": {
+    "editor.formatOnSave": false
+  },
+  "[typescriptreact]": {
+    "editor.formatOnSave": false
+  },
+  "files.autoSave": "onFocusChange",
+
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+
+  "cSpell.words": [
+    "Pressable",
+    "Semibold",
+    "Subheadline",
+    "cocoapods",
+    "consts",
+    "fluentui",
+    "focusable",
+    "macos",
+    "monospace",
+    "nuget",
+    "objc",
+    "podspec",
+    "podspecs",
+    "stylesheet",
+    "subspec",
+    "uifabricshared",
+    "unemphasized",
+    "favourite",
+    "firestore"
+  ],
+  "cSpell.diagnosticLevel": "Hint",
+
+  "i18n-ally.localesPaths": ["app/i18n/locales"],
+  "i18n-ally.keystyle": "nested",
+  "i18n-ally.pathMatcher": "{locale}/{namespace}.json",
+  "i18n-ally.sourceLanguage": "en",
+  "i18n-ally.displayLanguage": "en",
+
+  "eslint.workingDirectories": [{ "mode": "auto" }],
+  "eslint.useFlatConfig": true,
+
+  "jest.runMode": {
+    "type": "on-demand"
+  }
+}
