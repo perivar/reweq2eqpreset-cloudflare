@@ -1,7 +1,7 @@
 import { FXP } from "../FXP";
 
 // set this to true to debug the outputs as objects
-const DO_DEBUG_OBJECT = true;
+const DO_DEBUG_OBJECT = false;
 
 // Function to get the exact byte array for each float in big-endian format
 function getFloatBytes(values: number[]): number[] {
@@ -24,7 +24,7 @@ function getFloatBytes(values: number[]): number[] {
   return floatBytes;
 }
 
-test("fxp", () => {
+test("fxp-FxCk", () => {
   // Define float values that convert to exact values when stored in 4 bytes
   const floatValues = [
     0.0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0, 1.125,
@@ -69,20 +69,30 @@ test("fxp", () => {
   ]);
 
   const actualFxp = new FXP(data);
-
-  if (DO_DEBUG_OBJECT) console.log(JSON.stringify(actualFxp, null, 2));
-  expect(actualFxp).toStrictEqual({
-    content: {
-      chunkMagic: "CcnK",
-      byteSize: 88,
-      fxMagic: "FxCk",
-      version: 1,
-      fxID: "Pno1",
-      fxVersion: 1,
-      numParameters: 10,
-      programName: "Acoustic Piano",
-      parameters: [0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1, 1.125],
-    },
-    xmlDocument: undefined,
-  });
+  const actualFxpAsJson = JSON.stringify(actualFxp, null, 2);
+  if (DO_DEBUG_OBJECT) console.log(actualFxpAsJson);
+  expect(actualFxpAsJson).toStrictEqual(`{
+  "content": {
+    "chunkMagic": "CcnK",
+    "byteSize": 88,
+    "fxMagic": "FxCk",
+    "version": 1,
+    "fxID": "Pno1",
+    "fxVersion": 1,
+    "numParameters": 10,
+    "programName": "Acoustic Piano",
+    "parameters": {
+      "0": 0,
+      "1": 0.125,
+      "2": 0.25,
+      "3": 0.375,
+      "4": 0.5,
+      "5": 0.625,
+      "6": 0.75,
+      "7": 0.875,
+      "8": 1,
+      "9": 1.125
+    }
+  }
+}`);
 });
