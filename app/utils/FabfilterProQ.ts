@@ -1,5 +1,6 @@
 import { BinaryFile, ByteOrder } from "./BinaryFile";
 import { FabfilterProQBase } from "./FabfilterProQBase";
+import { FXP } from "./FXP";
 
 export enum ProQShape {
   Bell = 0,
@@ -211,6 +212,34 @@ export class FabfilterProQ implements FabfilterProQBase {
     }
 
     return new Uint8Array(buffer);
+  }
+
+  public WriteFXP(): Uint8Array | undefined {
+    const bf = new BinaryFile();
+
+    // Write the header
+    bf.binaryWriter?.writeString("FPQr");
+    bf.binaryWriter?.writeUInt32(this.Version);
+
+    // Write the bands content
+    const bandsContent = this.getBandsContent();
+    if (bandsContent) {
+      bf.binaryWriter?.writeBytes(bandsContent);
+    } else {
+      console.warn("No bands content to write.");
+    }
+
+    // Retrieve the buffer and convert it to Uint8Array
+    const buffer = bf.binaryWriter?.getBuffer();
+    if (!buffer) {
+      console.error("Failed to get buffer from binary writer.");
+      return undefined; // Explicitly return undefined if the buffer is not available
+    }
+
+    const uint8Array = new Uint8Array(buffer);
+    const fxpUint8Array = FXP.WriteRaw2FXP(uint8Array, "FQ3p");
+
+    return fxpUint8Array;
   }
 
   private getBandsContent(): ArrayBuffer | undefined {

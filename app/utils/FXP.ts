@@ -324,7 +324,7 @@ export class FXP {
     }
   }
 
-  readFile(data: ArrayBuffer | Uint8Array): void {
+  public readFile(data: ArrayBuffer | Uint8Array): void {
     const bf = new BinaryFile(data, ByteOrder.BigEndian);
     const fxp = FXP.readFXP(bf);
     this.content = fxp.content;
@@ -332,23 +332,23 @@ export class FXP {
   }
 
   private static readFXP(bf: BinaryFile): FXP {
-    const ChunkMagic = bf.binaryReader?.readString(4) || "";
-    if (ChunkMagic !== "CcnK") {
+    const chunkMagic = bf.binaryReader?.readString(4) || "";
+    if (chunkMagic !== "CcnK") {
       throw new Error(
-        `Error reading file. Missing preset header information ${ChunkMagic}`
+        `Error reading file. Missing preset header information ${chunkMagic}`
       );
     }
 
     const fxp = new FXP();
-    const ByteSize = bf.binaryReader?.readInt32() || 0;
-    const FxMagic = bf.binaryReader?.readString(4) || "";
+    const byteSize = bf.binaryReader?.readInt32() || 0;
+    const fxMagic = bf.binaryReader?.readString(4) || "";
 
-    if (FxMagic === "FBCh") {
+    if (fxMagic === "FBCh") {
       // Bank (.fxb) with chunk (magic = 'FBCh')
       const chunkSet = new FxChunkSet();
-      chunkSet.ChunkMagic = ChunkMagic;
-      chunkSet.ByteSize = ByteSize;
-      chunkSet.FxMagic = FxMagic;
+      chunkSet.ChunkMagic = chunkMagic;
+      chunkSet.ByteSize = byteSize;
+      chunkSet.FxMagic = fxMagic;
 
       chunkSet.Version = bf.binaryReader?.readInt32() || 0;
       chunkSet.FxID = bf.binaryReader?.readString(4) || "";
@@ -381,12 +381,12 @@ export class FXP {
       }
 
       fxp.content = chunkSet;
-    } else if (FxMagic === "FPCh") {
+    } else if (fxMagic === "FPCh") {
       // Preset (Program) (.fxp) with chunk (magic = 'FPCh')
       const programSet = new FxProgramSet();
-      programSet.ChunkMagic = ChunkMagic;
-      programSet.ByteSize = ByteSize;
-      programSet.FxMagic = FxMagic;
+      programSet.ChunkMagic = chunkMagic;
+      programSet.ByteSize = byteSize;
+      programSet.FxMagic = fxMagic;
 
       programSet.Version = bf.binaryReader?.readInt32() || 0;
       programSet.FxID = bf.binaryReader?.readString(4) || "";
@@ -419,12 +419,12 @@ export class FXP {
       }
 
       fxp.content = programSet;
-    } else if (FxMagic === "FxCk") {
+    } else if (fxMagic === "FxCk") {
       // For Preset (Program) (.fxp) without chunk (magic = 'FxCk')
       const program = new FxProgram();
-      program.ChunkMagic = ChunkMagic;
-      program.ByteSize = ByteSize;
-      program.FxMagic = FxMagic;
+      program.ChunkMagic = chunkMagic;
+      program.ByteSize = byteSize;
+      program.FxMagic = fxMagic;
 
       program.Version = bf.binaryReader?.readInt32() || 0;
       program.FxID = bf.binaryReader?.readString(4) || "";
@@ -441,12 +441,12 @@ export class FXP {
       }
 
       fxp.content = program;
-    } else if (FxMagic === "FxBk") {
+    } else if (fxMagic === "FxBk") {
       // For bank (.fxb) without chunk (magic = 'FxBk')
       const set = new FxSet();
-      set.ChunkMagic = ChunkMagic;
-      set.ByteSize = ByteSize;
-      set.FxMagic = FxMagic;
+      set.ChunkMagic = chunkMagic;
+      set.ByteSize = byteSize;
+      set.FxMagic = fxMagic;
 
       set.Version = bf.binaryReader?.readInt32() || 0;
       set.FxID = bf.binaryReader?.readString(4) || "";
@@ -466,7 +466,10 @@ export class FXP {
     return fxp;
   }
 
-  public static WriteRaw2FXP(ChunkData: Uint8Array, FxID: string): FXP {
+  public static WriteRaw2FXP(
+    chunkData: Uint8Array,
+    fxID: string
+  ): Uint8Array | undefined {
     const fxp = new FXP();
     const fxpContent = new FxProgramSet();
     fxp.content = fxpContent;
@@ -474,15 +477,13 @@ export class FXP {
     fxpContent.ByteSize = 0; // will be set correctly by FXP class
     fxpContent.FxMagic = "FPCh"; // FPCh = FXP (preset), FBCh = FXB (bank)
     fxpContent.Version = 1; // Format Version (should be 1)
-    fxpContent.FxID = FxID.substring(0, 4);
+    fxpContent.FxID = fxID.substring(0, 4);
     fxpContent.FxVersion = 1;
     fxpContent.NumPrograms = 1;
     fxpContent.Name = "";
-    fxpContent.ChunkSize = ChunkData.length;
-    fxpContent.ChunkData = ChunkData;
+    fxpContent.ChunkSize = chunkData.length;
+    fxpContent.ChunkData = chunkData;
 
-    fxp.writeFile();
-
-    return fxp;
+    return fxp.writeFile();
   }
 }
