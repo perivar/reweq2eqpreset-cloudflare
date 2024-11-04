@@ -706,3 +706,178 @@ test("rew-Generic-5", () => {
     ],
   });
 });
+
+test("rew-Generic-hometheatershack", () => {
+  const filePath = path.join(
+    __dirname,
+    "data/hometheatershack-eq-filters-generic-testfr.txt"
+  );
+  const fileContent = fs.readFileSync(filePath, "utf8");
+  const actual = REWEQ.readREWEQFiltersFromString(fileContent, ".");
+
+  if (DO_DEBUG_OBJECT) console.log(JSON.stringify(actual, null, 2));
+  expect(toPlainObject(actual)).toStrictEqual({
+    EqBands: [
+      {
+        FilterType: 0,
+        Enabled: true,
+        FilterFreq: 22.6,
+        FilterGain: -9.4,
+        FilterQ: 10.09,
+        FilterBWOct: 0.1429,
+      },
+      {
+        FilterType: 0,
+        Enabled: true,
+        FilterFreq: 27.6,
+        FilterGain: -16.1,
+        FilterQ: 11.16,
+        FilterBWOct: 0.1292,
+      },
+      {
+        FilterType: 0,
+        Enabled: true,
+        FilterFreq: 28.5,
+        FilterGain: 12,
+        FilterQ: 2,
+        FilterBWOct: 0.714,
+      },
+      {
+        FilterType: 0,
+        Enabled: true,
+        FilterFreq: 34.5,
+        FilterGain: -5.4,
+        FilterQ: 4.02,
+        FilterBWOct: 0.358,
+      },
+      {
+        FilterType: 0,
+        Enabled: true,
+        FilterFreq: 42.6,
+        FilterGain: 1.7,
+        FilterQ: 6.7,
+        FilterBWOct: 0.2151,
+      },
+      {
+        FilterType: 0,
+        Enabled: true,
+        FilterFreq: 51.7,
+        FilterGain: -8.2,
+        FilterQ: 18.08,
+        FilterBWOct: 0.0798,
+      },
+      {
+        FilterType: 0,
+        Enabled: true,
+        FilterFreq: 64.8,
+        FilterGain: 12,
+        FilterQ: 8.29,
+        FilterBWOct: 0.1739,
+      },
+      {
+        FilterType: 0,
+        Enabled: true,
+        FilterFreq: 66.9,
+        FilterGain: -5.3,
+        FilterQ: 31.69,
+        FilterBWOct: 0.0455,
+      },
+      {
+        FilterType: 0,
+        Enabled: true,
+        FilterFreq: 77.8,
+        FilterGain: -7.3,
+        FilterQ: 2.88,
+        FilterBWOct: 0.4985,
+      },
+      {
+        FilterType: 0,
+        Enabled: true,
+        FilterFreq: 128,
+        FilterGain: 11.2,
+        FilterQ: 7.92,
+        FilterBWOct: 0.182,
+      },
+      {
+        FilterType: 0,
+        Enabled: true,
+        FilterFreq: 146,
+        FilterGain: -4.8,
+        FilterQ: 7.97,
+        FilterBWOct: 0.1809,
+      },
+      {
+        FilterType: 0,
+        Enabled: true,
+        FilterFreq: 176,
+        FilterGain: -7.9,
+        FilterQ: 4,
+        FilterBWOct: 0.3597,
+      },
+      {
+        FilterType: 0,
+        Enabled: true,
+        FilterFreq: 208,
+        FilterGain: -6.6,
+        FilterQ: 30.91,
+        FilterBWOct: 0.0467,
+      },
+      {
+        FilterType: 0,
+        Enabled: true,
+        FilterFreq: 219,
+        FilterGain: 12,
+        FilterQ: 4.14,
+        FilterBWOct: 0.3476,
+      },
+      {
+        FilterType: 0,
+        Enabled: true,
+        FilterFreq: 232,
+        FilterGain: -10.6,
+        FilterQ: 18.13,
+        FilterBWOct: 0.0796,
+      },
+      {
+        FilterType: 0,
+        Enabled: true,
+        FilterFreq: 301,
+        FilterGain: -10.5,
+        FilterQ: 5.9,
+        FilterBWOct: 0.2442,
+      },
+      {
+        FilterType: 0,
+        Enabled: true,
+        FilterFreq: 344,
+        FilterGain: 12,
+        FilterQ: 2.62,
+        FilterBWOct: 0.5474,
+      },
+      {
+        FilterType: 0,
+        Enabled: true,
+        FilterFreq: 398,
+        FilterGain: -9.1,
+        FilterQ: 4.68,
+        FilterBWOct: 0.3077,
+      },
+      {
+        FilterType: 0,
+        Enabled: true,
+        FilterFreq: 613,
+        FilterGain: -5,
+        FilterQ: 45.32,
+        FilterBWOct: 0.0318,
+      },
+      {
+        FilterType: 0,
+        Enabled: true,
+        FilterFreq: 688,
+        FilterGain: 7,
+        FilterQ: 45.76,
+        FilterBWOct: 0.0315,
+      },
+    ],
+  });
+});

@@ -5,7 +5,7 @@ import { FabfilterProQ } from "../FabfilterProQ";
 import { areTypedArraysEqual, toPlainObject } from "./helpers/testUtils";
 
 // set this to true to debug the outputs as objects
-const DO_DEBUG_OBJECT = true;
+const DO_DEBUG_OBJECT = false;
 
 test("rew-Generic-6-readFFP", () => {
   const filePath = path.join(
