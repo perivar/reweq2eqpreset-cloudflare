@@ -4,7 +4,7 @@ import {
   roundToNumber,
 } from "./Math";
 
-enum REWEQFilterType {
+export enum REWEQFilterType {
   PK = 0, // PK for a peaking (parametric) filter
   LP = 1, // LP for a 12dB/octave Low Pass filter (Q=0.7071)
   HP = 2, // HP for a 12dB/octave High Pass filter (Q=0.7071)
@@ -20,7 +20,7 @@ enum REWEQFilterType {
   HPQ = 12, // HPQ, a 12dB/octave High Pass filter with adjustable Q
 }
 
-class REWEQBand {
+export class REWEQBand {
   FilterType: REWEQFilterType;
   Enabled: boolean;
   FilterFreq: number; // Hz
@@ -42,19 +42,11 @@ class REWEQBand {
   }
 }
 
-class REWEQFilters {
+export class REWEQFilters {
   EqBands: REWEQBand[];
 
   constructor() {
     this.EqBands = [];
-  }
-
-  get Count(): number {
-    return this.EqBands.length;
-  }
-
-  *[Symbol.iterator]() {
-    yield* this.EqBands;
   }
 }
 

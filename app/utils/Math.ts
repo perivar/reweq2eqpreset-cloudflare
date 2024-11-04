@@ -33,7 +33,7 @@ export function getDecimalSeparator(): string {
  */
 export function parseFloatWithSeparator(
   value: string,
-  decimalSeparator: string
+  decimalSeparator: string = "."
 ): number {
   // Create a regular expression to match any character that is not a digit or the specified decimal separator
   const digitsAndDecimalSeparatorOnly = new RegExp(
