@@ -35,7 +35,7 @@ test("fxp-FxCk", () => {
     "C".charCodeAt(0),
     "c".charCodeAt(0),
     "n".charCodeAt(0),
-    "K".charCodeAt(0), // 'CcnK' (chunkMagic)
+    "K".charCodeAt(0), // 'CcnK' (ChunkMagic)
     0x00,
     0x00,
     0x00,
@@ -43,23 +43,23 @@ test("fxp-FxCk", () => {
     "F".charCodeAt(0),
     "x".charCodeAt(0),
     "C".charCodeAt(0),
-    "k".charCodeAt(0), // 'FxCk' (fxMagic)
+    "k".charCodeAt(0), // 'FxCk' (FxMagic)
     0x00,
     0x00,
     0x00,
-    0x01, // version
+    0x01, // Version
     "P".charCodeAt(0),
     "n".charCodeAt(0),
     "o".charCodeAt(0),
-    "1".charCodeAt(0), // fxID ('Pno1')
+    "1".charCodeAt(0), // FxID ('Pno1')
     0x00,
     0x00,
     0x00,
-    0x01, // fxVersion
+    0x01, // FxVersion
     0x00,
     0x00,
     0x00,
-    floatValues.length, // numParams (0a = 10 parameters)
+    floatValues.length, // numParams (0a = 10 Parameters)
     ..."Acoustic Piano"
       .padEnd(28, "\0")
       .split("")
@@ -73,15 +73,15 @@ test("fxp-FxCk", () => {
   if (DO_DEBUG_OBJECT) console.log(actualFxpAsJson);
   expect(actualFxpAsJson).toStrictEqual(`{
   "content": {
-    "chunkMagic": "CcnK",
-    "byteSize": 88,
-    "fxMagic": "FxCk",
-    "version": 1,
-    "fxID": "Pno1",
-    "fxVersion": 1,
-    "numParameters": 10,
-    "programName": "Acoustic Piano",
-    "parameters": {
+    "ChunkMagic": "CcnK",
+    "ByteSize": 88,
+    "FxMagic": "FxCk",
+    "Version": 1,
+    "FxID": "Pno1",
+    "FxVersion": 1,
+    "NumParameters": 10,
+    "ProgramName": "Acoustic Piano",
+    "Parameters": {
       "0": 0,
       "1": 0.125,
       "2": 0.25,
