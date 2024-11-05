@@ -4,8 +4,14 @@ import { FormEvent, useState } from "react";
 import { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare";
 import { json } from "@remix-run/react";
 import i18next from "~/i18n/i18n.server";
+import { getDecimalSeparator } from "~/utils/Math";
+import { Convert2ReaEQ } from "~/utils/ReaEQ";
 import { REWEQ, REWEQFilters } from "~/utils/REWEQ";
-import { toFabfilterProQ } from "~/utils/REWToFabfilter";
+import {
+  toFabfilterProQ1,
+  toFabfilterProQ2,
+  toFabfilterProQ3,
+} from "~/utils/REWToFabfilter";
 import { Upload } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
@@ -21,6 +27,13 @@ import {
 } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
 import { useToast } from "~/components/ui/use-toast";
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -35,12 +48,22 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
   ];
 };
 
+type PresetType =
+  | "ReaEQ"
+  | "FabFilterProQ1"
+  | "FabFilterProQ2"
+  | "FabFilterProQ3"
+  | "Generic";
+
 export default function Index() {
   const { t } = useTranslation();
   const { toast } = useToast();
 
   const [rewFilters, setREWFilters] = useState<REWEQFilters | null>();
-  const [decimalSeparator, setDecimalSeparator] = useState(".");
+  const [decimalSeparator, setDecimalSeparator] = useState(
+    getDecimalSeparator()
+  );
+  const [presetType, setPresetType] = useState<PresetType>("Generic");
   const [error, setError] = useState<string | null>(null);
 
   const onDrop = (acceptedFiles: File[]) => {
@@ -57,7 +80,7 @@ export default function Index() {
         setREWFilters(filters);
         if (!filters)
           setError(
-            "Could not read file, check file and make sure you are using the correcrt decimal separator"
+            "Could not read file! Check file and make sure you are using the correct decimal separator"
           );
       };
       reader.readAsText(file);
@@ -92,8 +115,35 @@ export default function Index() {
     try {
       if (!rewFilters) throw new Error("No REW filter data found");
 
-      const fabfilterPreset = toFabfilterProQ(rewFilters);
-      const presetData = fabfilterPreset?.writeFFP();
+      let fileName: string | undefined = undefined;
+      let presetData: Uint8Array | undefined = undefined;
+      switch (presetType) {
+        case "ReaEQ":
+          const fxp = Convert2ReaEQ(rewFilters);
+          presetData = fxp?.writeFile();
+          fileName = "ReaEq.fxp";
+          break;
+        case "FabFilterProQ1":
+          const fabfilterPresetQ1 = toFabfilterProQ1(rewFilters);
+          presetData = fabfilterPresetQ1?.writeFFP();
+          fileName = "FabFilterProQ1.ffp";
+          break;
+        case "FabFilterProQ2":
+          const fabfilterPresetQ2 = toFabfilterProQ2(rewFilters);
+          presetData = fabfilterPresetQ2?.writeFFP();
+          fileName = "FabFilterProQ2.ffp";
+          break;
+        case "FabFilterProQ3":
+          const fabfilterPresetQ3 = toFabfilterProQ3(rewFilters);
+          presetData = fabfilterPresetQ3?.writeFFP();
+          fileName = "FabFilterProQ3.ffp";
+          break;
+        default: // Generic
+          const filtersAsString = rewFilters.toString();
+          const encoder = new TextEncoder();
+          presetData = encoder.encode(filtersAsString);
+          fileName = "Generic.txt";
+      }
 
       if (!presetData) throw new Error("Failed generating preset");
 
@@ -103,7 +153,7 @@ export default function Index() {
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = "preset.fxp";
+      link.download = fileName;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -127,6 +177,35 @@ export default function Index() {
       </CardHeader>
 
       <CardContent>
+        <div className="mb-4 space-y-4">
+          <div>
+            <Label htmlFor="preset-type">Preset Type to generate</Label>
+            <Select
+              onValueChange={(value: PresetType) => setPresetType(value)}
+              defaultValue={presetType}>
+              <SelectTrigger id="preset-type">
+                <SelectValue placeholder="Select preset type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Generic">Generic FXP</SelectItem>
+                <SelectItem value="ReaEQ">ReaEQ</SelectItem>
+                <SelectItem value="FabFilterProQ1">FabFilterProQ1</SelectItem>
+                <SelectItem value="FabFilterProQ2">FabFilterProQ2</SelectItem>
+                <SelectItem value="FabFilterProQ3">FabFilterProQ3</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label htmlFor="decimal-separator">Decimal Separator</Label>
+            <Input
+              id="decimal-separator"
+              value={decimalSeparator}
+              onChange={e => handleDecimalSeparatorChange(e.target.value)}
+              className="w-16"
+              maxLength={1}
+            />
+          </div>
+        </div>
         <div>
           <div
             {...getRootProps()}
@@ -145,16 +224,6 @@ export default function Index() {
             <h4 className="text-base">Files:</h4>
             <ul className="text-sm">{files}</ul>
           </aside>
-          <div className="mt-4">
-            <Label htmlFor="decimal-separator">Decimal Separator</Label>
-            <Input
-              id="decimal-separator"
-              value={decimalSeparator}
-              onChange={e => handleDecimalSeparatorChange(e.target.value)}
-              className="w-16"
-              maxLength={1}
-            />
-          </div>
         </div>
       </CardContent>
       <CardFooter className="flex flex-col items-stretch">

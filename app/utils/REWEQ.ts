@@ -37,8 +37,12 @@ export class REWEQBand {
     this.FilterBWOct = 0;
   }
 
+  getFilterTypeName(): string {
+    return REWEQFilterType[this.FilterType]; // Converts the enum value to its name
+  }
+
   toString(): string {
-    return `${this.FilterType}: ${this.FilterFreq.toFixed(2)} Hz ${this.FilterGain.toFixed(2)} dB Q: ${this.FilterQ.toFixed(4)} BWOct: ${this.FilterBWOct.toFixed(4)}`;
+    return `${this.getFilterTypeName()}: ${this.FilterFreq.toFixed(2)} Hz ${this.FilterGain.toFixed(2)} dB Q: ${this.FilterQ.toFixed(4)} BWOct: ${this.FilterBWOct.toFixed(4)}`;
   }
 }
 
@@ -47,6 +51,17 @@ export class REWEQFilters {
 
   constructor() {
     this.EqBands = [];
+  }
+
+  toString(): string {
+    // Accumulate each filter's string representation
+    const outputLines: string[] = [];
+    for (const band of this.EqBands) {
+      outputLines.push(band.toString());
+    }
+
+    const outputString = outputLines.join("\n");
+    return outputString;
   }
 }
 

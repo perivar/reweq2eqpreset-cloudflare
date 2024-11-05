@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 
 import { REWEQ } from "../REWEQ";
-import { toFabfilterProQ } from "../REWToFabfilter";
+import { toFabfilterProQ1 } from "../REWToFabfilter";
 import { toPlainObject } from "./helpers/testUtils";
 
 // set this to true to debug the outputs as objects
@@ -15,7 +15,7 @@ test("rew-Generic-6", () => {
   );
   const fileContent = fs.readFileSync(filePath, "utf8");
   const filters = REWEQ.readREWEQFiltersFromString(fileContent, ",");
-  const actual = filters && toFabfilterProQ(filters);
+  const actual = filters && toFabfilterProQ1(filters);
 
   if (DO_DEBUG_OBJECT) console.log(JSON.stringify(actual, null, 2));
   expect(toPlainObject(actual)).toStrictEqual({
