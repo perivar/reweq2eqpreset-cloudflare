@@ -1,8 +1,13 @@
 // app/routes/_index.tsx
 
+import { FormEvent, useState } from "react";
 import { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare";
-import { json, Link } from "@remix-run/react";
+import { json } from "@remix-run/react";
 import i18next from "~/i18n/i18n.server";
+import { REWEQ, REWEQFilters } from "~/utils/REWEQ";
+import { toFabfilterProQ } from "~/utils/REWToFabfilter";
+import { Upload } from "lucide-react";
+import { useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "~/components/ui/button";
@@ -16,14 +21,6 @@ import {
 } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "~/components/ui/select";
-import { ToastAction } from "~/components/ui/toast";
 import { useToast } from "~/components/ui/use-toast";
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -42,105 +39,138 @@ export default function Index() {
   const { t } = useTranslation();
   const { toast } = useToast();
 
+  const [rewFilters, setREWFilters] = useState<REWEQFilters | null>();
+  const [decimalSeparator, setDecimalSeparator] = useState(".");
+  const [error, setError] = useState<string | null>(null);
+
+  const onDrop = (acceptedFiles: File[]) => {
+    const file = acceptedFiles[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        setError(null);
+        const content = e.target?.result as string;
+        const filters = REWEQ.readREWEQFiltersFromString(
+          content,
+          decimalSeparator
+        );
+        setREWFilters(filters);
+        if (!filters)
+          setError(
+            "Could not read file, check file and make sure you are using the correcrt decimal separator"
+          );
+      };
+      reader.readAsText(file);
+    }
+  };
+
+  const { acceptedFiles, getRootProps, getInputProps, isDragActive } =
+    useDropzone({
+      onDrop,
+      accept: {
+        "text/plain": [".txt"],
+      },
+      multiple: false,
+    });
+
+  const files = acceptedFiles.map(file => (
+    <li key={file.path}>
+      {file.path} - {file.size} bytes
+    </li>
+  ));
+
+  const handleDecimalSeparatorChange = (value: string) => {
+    if (value.length <= 1) {
+      setDecimalSeparator(value);
+    }
+  };
+
+  const generateFXP = async (e: FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
+    try {
+      if (!rewFilters) throw new Error("No REW filter data found");
+
+      const fabfilterPreset = toFabfilterProQ(rewFilters);
+      const presetData = fabfilterPreset?.writeFFP();
+
+      if (!presetData) throw new Error("Failed generating preset");
+
+      const blob = new Blob([presetData], {
+        type: "application/octet-stream",
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "preset.fxp";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      setError(
+        "An error occurred while generating the FXP file. Please try again."
+      );
+      console.error(err);
+    }
+  };
+
   return (
-    <section className="flex min-h-screen w-full flex-col">
-      <div className="container flex flex-1 justify-center overflow-x-hidden px-4 py-8 md:px-6">
-        <div className="flex flex-col items-center space-y-4 p-4 text-center md:w-1/2">
-          <h1 className="text-3xl font-bold tracking-tighter md:text-3xl">
-            <span className="bg-gradient-to-r from-orange-700 via-blue-500 to-green-400 bg-clip-text font-extrabold text-transparent">
-              {t("welcome_to")}
-            </span>{" "}
-            {t("title")}
-          </h1>
+    <Card className="mx-auto mt-6 w-full max-w-md">
+      <CardHeader>
+        <CardTitle>FXP Preset Generator</CardTitle>
+        <CardDescription>
+          Upload a REW EQ Preset file and convert to different types of EQ
+          presets
+        </CardDescription>
+      </CardHeader>
 
-          <div className="font-sans">
-            <h1 className="text-2xl font-bold tracking-tighter md:text-3xl">
-              Welcome to Remix
-            </h1>
-            <ul className="mt-4 list-disc">
-              <li>
-                <Link
-                  className="hover:underline"
-                  target="_blank"
-                  to="https://remix.run/start/quickstart"
-                  rel="noreferrer">
-                  5m Quick Start
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="hover:underline"
-                  target="_blank"
-                  to="https://remix.run/start/tutorial"
-                  rel="noreferrer">
-                  30m Tutorial
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="hover:underline"
-                  target="_blank"
-                  to="https://remix.run/docs"
-                  rel="noreferrer">
-                  Remix Docs
-                </Link>
-              </li>
-            </ul>
+      <CardContent>
+        <div>
+          <div
+            {...getRootProps()}
+            className={`mb-4 cursor-pointer rounded-lg border-2 border-dashed p-4 text-center ${
+              isDragActive ? "border-primary bg-primary/10" : "border-gray-300"
+            }`}>
+            <input {...getInputProps()} />
+            <Upload className="mx-auto size-12 text-gray-400" />
+            <p className="mt-2 text-sm text-gray-500">
+              {isDragActive
+                ? "Drop the file here"
+                : "Drag and drop a file here, or click to select a file"}
+            </p>
           </div>
-
-          <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-            <Button
-              variant="outline"
-              onClick={() => {
-                toast({
-                  variant: "destructive",
-                  title: "Uh oh! Something went wrong.",
-                  description: "There was a problem with your request.",
-                  action: (
-                    <ToastAction altText="Try again">Try again</ToastAction>
-                  ),
-                });
-              }}>
-              Show Error Toast
-            </Button>
+          <aside>
+            <h4 className="text-base">Files:</h4>
+            <ul className="text-sm">{files}</ul>
+          </aside>
+          <div className="mt-4">
+            <Label htmlFor="decimal-separator">Decimal Separator</Label>
+            <Input
+              id="decimal-separator"
+              value={decimalSeparator}
+              onChange={e => handleDecimalSeparatorChange(e.target.value)}
+              className="w-16"
+              maxLength={1}
+            />
           </div>
-
-          <Card className="w-[350px]">
-            <CardHeader>
-              <CardTitle>Dummy Card Example</CardTitle>
-              <CardDescription>Describe the function here.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form>
-                <div className="grid w-full items-center gap-4">
-                  <div className="flex flex-col space-y-1.5">
-                    <Label htmlFor="name">Name</Label>
-                    <Input id="name" placeholder="Name" />
-                  </div>
-                  <div className="flex flex-col space-y-1.5">
-                    <Label htmlFor="framework">Framework</Label>
-                    <Select>
-                      <SelectTrigger id="framework">
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent position="popper">
-                        <SelectItem value="next">Next.js</SelectItem>
-                        <SelectItem value="sveltekit">SvelteKit</SelectItem>
-                        <SelectItem value="astro">Astro</SelectItem>
-                        <SelectItem value="nuxt">Nuxt.js</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </form>
-            </CardContent>
-            <CardFooter className="flex justify-between">
-              <Button variant="outline">Cancel</Button>
-              <Button>Deploy</Button>
-            </CardFooter>
-          </Card>
         </div>
-      </div>
-    </section>
+      </CardContent>
+      <CardFooter className="flex flex-col items-stretch">
+        <Button
+          type="submit"
+          onClick={generateFXP}
+          className="w-full"
+          disabled={!rewFilters}>
+          Generate and Download FXP
+        </Button>
+        {error && (
+          <p className="mt-2 text-center text-red-500" role="alert">
+            {error}
+          </p>
+        )}
+      </CardFooter>
+    </Card>
   );
 }

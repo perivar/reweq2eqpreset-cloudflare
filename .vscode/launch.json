@@ -6,7 +6,7 @@
   "configurations": [
     {
       "name": "Debug Backend",
-      "command": "yarn dev",
+      "command": "npm run dev",
       "request": "launch",
       "type": "node-terminal",
       "cwd": "${workspaceFolder}"
@@ -23,7 +23,7 @@
       "name": "Debug Backend and Frontend",
       "type": "node-terminal",
       "request": "launch",
-      "command": "yarn dev",
+      "command": "npm run dev",
       "cwd": "${workspaceFolder}",
       "serverReadyAction": {
         "action": "startDebugging",

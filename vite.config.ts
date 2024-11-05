@@ -12,6 +12,9 @@ declare module "@remix-run/cloudflare" {
 }
 
 export default defineConfig({
+  ssr: {
+    noExternal: ["react-dropzone"], // ensures react-dropzone is bundled
+  },
   plugins: [
     remixCloudflareDevProxy(),
     remix({
