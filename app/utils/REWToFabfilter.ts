@@ -25,7 +25,7 @@ import { REWEQBand, REWEQFilters, REWEQFilterType } from "./REWEQ";
 /**
  * Function for converting a REW filter set to a Fabfilter Pro Q1 preset.
  */
-export function toFabfilterProQ1(filters: REWEQFilters): FabfilterProQ {
+export function toFabfilterProQ(filters: REWEQFilters): FabfilterProQ {
   const preset = new FabfilterProQ();
   preset.Version = 2;
   preset.Bands = [];

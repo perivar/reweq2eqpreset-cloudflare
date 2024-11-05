@@ -8,7 +8,7 @@ import { getDecimalSeparator } from "~/utils/Math";
 import { Convert2ReaEQ } from "~/utils/ReaEQ";
 import { REWEQ, REWEQFilters } from "~/utils/REWEQ";
 import {
-  toFabfilterProQ1,
+  toFabfilterProQ,
   toFabfilterProQ2,
   toFabfilterProQ3,
 } from "~/utils/REWToFabfilter";
@@ -124,7 +124,7 @@ export default function Index() {
           fileName = "ReaEq.fxp";
           break;
         case "FabFilterProQ1":
-          const fabfilterPresetQ1 = toFabfilterProQ1(rewFilters);
+          const fabfilterPresetQ1 = toFabfilterProQ(rewFilters);
           presetData = fabfilterPresetQ1?.writeFFP();
           fileName = "FabFilterProQ1.ffp";
           break;
@@ -169,7 +169,7 @@ export default function Index() {
   return (
     <Card className="mx-auto mt-6 w-full max-w-md">
       <CardHeader>
-        <CardTitle>FXP Preset Generator</CardTitle>
+        <CardTitle>REW 2 Preset Generator</CardTitle>
         <CardDescription>
           Upload a REW EQ Preset file and convert to different types of EQ
           presets
@@ -187,7 +187,7 @@ export default function Index() {
                 <SelectValue placeholder="Select preset type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Generic">Generic FXP</SelectItem>
+                <SelectItem value="Generic">Generic Text File</SelectItem>
                 <SelectItem value="ReaEQ">ReaEQ</SelectItem>
                 <SelectItem value="FabFilterProQ1">FabFilterProQ1</SelectItem>
                 <SelectItem value="FabFilterProQ2">FabFilterProQ2</SelectItem>
@@ -232,7 +232,7 @@ export default function Index() {
           onClick={generateFXP}
           className="w-full"
           disabled={!rewFilters}>
-          Generate and Download FXP
+          Generate and Download Preset
         </Button>
         {error && (
           <p className="mt-2 text-center text-red-500" role="alert">

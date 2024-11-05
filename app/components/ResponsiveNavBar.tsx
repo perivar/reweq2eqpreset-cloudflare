@@ -24,6 +24,12 @@ import {
   SheetTrigger,
 } from "~/components/ui/sheet";
 
+interface NavItem {
+  title: string;
+  to: string;
+  items?: { title: string; to: string; description?: string }[];
+}
+
 export default function ResponsiveNavBar() {
   const [theme, setTheme] = useTheme();
   const [isOpen, setIsOpen] = useState(false);
@@ -37,42 +43,7 @@ export default function ResponsiveNavBar() {
 
   const navBrand = t("title");
 
-  const navItems = [
-    {
-      title: "Features",
-      items: [
-        {
-          title: "Analytics",
-          to: "#analytics",
-          description: "View detailed analytics",
-        },
-        {
-          title: "Security",
-          to: "#security",
-          description: "Keep your data safe",
-        },
-        {
-          title: "Automation",
-          to: "#automation",
-          description: "Automate your workflow",
-        },
-      ],
-    },
-    {
-      title: "Resources",
-      items: [
-        { title: "Blog", to: "#blog", description: "Read our latest news" },
-        {
-          title: "Documentation",
-          to: "#docs",
-          description: "Learn how to use our product",
-        },
-        { title: "Help Center", to: "#help", description: "Get support" },
-      ],
-    },
-    { title: "Pricing", to: "#pricing" },
-    { title: "About", to: "/about" },
-  ];
+  const navItems: NavItem[] = [{ title: "About", to: "/about" }];
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">

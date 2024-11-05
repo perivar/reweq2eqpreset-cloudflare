@@ -267,8 +267,6 @@ export class FabfilterProQ2 implements FabfilterProQBase {
     // 24 bands with 7 parameters each = 168
     // pluss the 22 parameters at the end
     bf.binaryWriter?.writeUInt32(24 * 7 + 22);
-    const enabledBandCount = this.Bands.filter(b => b.Enabled).length;
-    bf.binaryWriter?.writeFloat32(enabledBandCount);
 
     for (let i = 0; i < 24; i++) {
       if (i < this.Bands.length) {
