@@ -1,4 +1,5 @@
 import { FXP } from "../FXP";
+import { toPlainObject } from "./helpers/testUtils";
 
 // set this to true to debug the outputs as objects
 const DO_DEBUG_OBJECT = false;
@@ -69,30 +70,29 @@ test("fxp-FxCk", () => {
   ]);
 
   const actualFxp = new FXP(data);
-  const actualFxpAsJson = JSON.stringify(actualFxp, null, 2);
-  if (DO_DEBUG_OBJECT) console.log(actualFxpAsJson);
-  expect(actualFxpAsJson).toStrictEqual(`{
-  "content": {
-    "ChunkMagic": "CcnK",
-    "ByteSize": 88,
-    "FxMagic": "FxCk",
-    "Version": 1,
-    "FxID": "Pno1",
-    "FxVersion": 1,
-    "NumParameters": 10,
-    "ProgramName": "Acoustic Piano",
-    "Parameters": {
-      "0": 0,
-      "1": 0.125,
-      "2": 0.25,
-      "3": 0.375,
-      "4": 0.5,
-      "5": 0.625,
-      "6": 0.75,
-      "7": 0.875,
-      "8": 1,
-      "9": 1.125
-    }
-  }
-}`);
+  if (DO_DEBUG_OBJECT) console.log(JSON.stringify(actualFxp, null, 2));
+  expect(toPlainObject(actualFxp)).toStrictEqual({
+    content: {
+      ChunkMagic: "CcnK",
+      ByteSize: 88,
+      FxMagic: "FxCk",
+      Version: 1,
+      FxID: "Pno1",
+      FxVersion: 1,
+      NumParameters: 10,
+      ProgramName: "Acoustic Piano",
+      Parameters: {
+        "0": 0,
+        "1": 0.125,
+        "2": 0.25,
+        "3": 0.375,
+        "4": 0.5,
+        "5": 0.625,
+        "6": 0.75,
+        "7": 0.875,
+        "8": 1,
+        "9": 1.125,
+      },
+    },
+  });
 });

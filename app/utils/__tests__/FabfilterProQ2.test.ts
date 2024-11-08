@@ -289,7 +289,7 @@ test("FabfilterProQ2-readFFP-LCHC", () => {
   });
 });
 
-test("FabfilterProQ2-readFFP--LCHC-object", () => {
+test("FabfilterProQ2-readFFP-LCHC-object", () => {
   const filePath = path.join(
     __dirname,
     "data/Fabfilter/Q2-LowCut 32Hz HighCut 8500Hz.ffp"
@@ -311,7 +311,7 @@ test("FabfilterProQ2-readFFP--LCHC-object", () => {
   }
 });
 
-test("FabfilterProQ2-readFFP--LCHC-array", () => {
+test("FabfilterProQ2-readFFP-LCHC-array", () => {
   const filePath = path.join(
     __dirname,
     "data/Fabfilter/Q2-LowCut 32Hz HighCut 8500Hz.ffp"
