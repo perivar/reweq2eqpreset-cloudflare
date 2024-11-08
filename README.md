@@ -1,47 +1,87 @@
-# Welcome to Remix + Cloudflare!
+# Room EQ Wizard EQ Filter to VST EQ Plugin Preset Converter
 
-- 📖 [Remix docs](https://remix.run/docs)
-- 📖 [Remix Cloudflare docs](https://remix.run/guides/vite#cloudflare)
+## README
 
-## Development
+**Author:** Per Ivar Nerseth, 2024
+**Contact:** perivar@nerseth.com  
 
-Run the dev server:
+**Updated in 2024**  
+This project has now also been made into a web application!  
+You can find it here: [Room EQ Wizard to VST EQ Preset Web App](https://reweq2eqpreset.pages.dev/).
 
-```sh
-npm run dev
-```
+### Detailed Process Description
 
-To run Wrangler:
+For a detailed walkthrough of the process, watch this video:  
+[Room EQ Wizard to VST EQ Plugin Preset Conversion](http://www.youtube.com/watch?v=Fa9qlB6LK4c)  
+Created by Dozerbeatz (dozerbeatz@gmail.com).
 
-```sh
-npm run build
-npm run start
-```
+### Supported EQ Plugins
 
-## Typegen
+Instead of apQualizr, this tool supports the following EQ plugins:
+- **ReaEQ** (Free): [Download ReaEQ](http://www.reaper.fm/reaplugs/)
+- **FabFilter Pro-Q version 1, 2 and 3** (Commercial): [Download Pro-Q](http://www.fabfilter.com/products/pro-q-equalizer-plug-in)
 
-Generate types for your Cloudflare bindings in `wrangler.toml`:
+---
 
-```sh
-npm run typegen
-```
+## Summary of the Process
 
-You will need to rerun typegen whenever you make changes to `wrangler.toml`.
+1. **Calibrate the SPL Meter**  
+2. **Make a Measurement**  
+3. **Apply Smoothing**  
+   - Choose Graph: *Apply Smoothing 1/24 Octave Smoothing*  
+4. **Click the big "EQ" Button**  
+5. **Setup a Good EQ View**  
+   - Configure EQ View (Click the "Config" wheel):  
+     - *Smooth 1/24*  
+     - Check *Fill Filter responses*  
+     - Uncheck the rest  
 
-## Deployment
+6. **Set the Following Before Generating EQ Filters**:  
+   - **Equaliser**: Generic  
+   - **Target Settings**:  
+     - Speaker Type: *Full Range*  
+     - LF Slope: *24 dB/Octave*  
+     - LF Cutoff (Hz): *10*  
+     - Target Level (dB): *75.0* (or *80*)  
+   - **Filter Tasks**:  
+     - Match Range: *20 - 10,000 Hz*  
+     - Individual Max Boost: *12 dB*  
+     - Overall Max Boost: *9 dB*  
+     - Flatness Target: *1*  
 
-First, build your app for production:
+7. **Match Response to Target**  
+   - This creates an inverse EQ filter for the VST EQ plugin preset.  
+8. **Export the EQ Filters**  
+   - Go to "EQ Filters" view → Click the double arrow to sort filters low-to-high → Export as *Filter Settings as Text*.  
 
-```sh
-npm run build
-```
+9. **Run "REW2EQPreset" Tool**  
+   - Use the tool to generate a preset for your chosen EQ plugin, e.g., *FabFilter Pro-Q*.  
+   - **Note:** The tool tries to automatically uses the correct decimal separator based on your regional settings. Otherwise choose the correct decimal separator in the Web GUI.
 
-Then, deploy your app to Cloudflare Pages:
+10. **For FabFilter Pro-Q Users**  
+    - Copy the generated preset file (*.ffp) to the FabFilter EQ directory:  
+      `Documents\FabFilter\Pro-Q`  
 
-```sh
-npm run deploy
-```
+11. **Generate a "PinkPN" Signal**  
+    - Use the "Generator" and keep *65536* as length.  
 
-## Styling
+12. **Test in Your DAW**  
+    - Play the signal in your DAW with the EQ plugin inserted.  
 
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever css framework you prefer. See the [Vite docs on css](https://vitejs.dev/guide/features.html#css) for more information.
+13. **Verify Using Real Time Analyser (RTA) in REW**  
+    - [REW RTA Setup Guide](http://www.hometheatershack.com/roomeq/wizardhelpv5/help_en-GB/html/spectrum.html#top)  
+    - Choose *dB (Not dB Full Scale)*  
+
+### RTA Configuration:
+
+- **Mode**: `RTA 1/24 octave`
+- **FFT Length**: `65536`
+- **Averages**: `Exponential 0.94`
+- **Window**: `Rectangular`
+- **Max Overlap**: `93.75%`
+- **Update Interval**: `1`  
+- *No checkboxes checked*  
+
+> **Note:** Use *Rectangular* window for the best frequency resolution, especially with periodic noise signals like *Pink Noise PN*.
+
+---
