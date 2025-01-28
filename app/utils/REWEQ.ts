@@ -27,6 +27,7 @@ export class REWEQBand {
   FilterGain: number; // dB
   FilterQ: number; // Q value
   FilterBWOct: number; // Bandwidth per Octave
+  FilterBWHz: number; // Bandwidth in Hz
 
   constructor() {
     this.FilterType = REWEQFilterType.PK;
@@ -35,6 +36,7 @@ export class REWEQBand {
     this.FilterGain = 0;
     this.FilterQ = 0;
     this.FilterBWOct = 0;
+    this.FilterBWHz = 0;
   }
 
   getFilterTypeName(): string {
@@ -42,7 +44,7 @@ export class REWEQBand {
   }
 
   toString(): string {
-    return `${this.getFilterTypeName()}: ${this.FilterFreq.toFixed(2)} Hz ${this.FilterGain.toFixed(2)} dB Q: ${this.FilterQ.toFixed(4)} BWOct: ${this.FilterBWOct.toFixed(4)}`;
+    return `${this.getFilterTypeName()}: ${this.FilterFreq.toFixed(2)} Hz ${this.FilterGain.toFixed(2)} dB Q: ${this.FilterQ.toFixed(4)} BWOct: ${this.FilterBWOct.toFixed(4)} BWHz: ${this.FilterBWHz.toFixed(2)}`;
   }
 }
 
@@ -54,14 +56,11 @@ export class REWEQFilters {
   }
 
   toString(): string {
-    // Accumulate each filter's string representation
     const outputLines: string[] = [];
     for (const band of this.EqBands) {
       outputLines.push(band.toString());
     }
-
-    const outputString = outputLines.join("\n");
-    return outputString;
+    return outputLines.join("\n");
   }
 }
 
@@ -81,11 +80,81 @@ export class REWEQ {
       decimalSeparator = getDecimalSeparator();
     }
 
-    let filterCount = 0;
+    const lines = fileContent.split(/\r?\n/);
+
+    // Check if this is the new format
+    const isNewFormat =
+      lines[0].trim() === "Generic" &&
+      lines.length > 1 &&
+      lines[1].includes("Number Enabled Control Type Frequency");
+
+    if (isNewFormat) {
+      // Get column indices from header
+      const headers = lines[1].split(/\s+/);
+      const bandwidthColumnIndex = headers.findIndex(
+        h => h === "Bandwidth(Hz)"
+      );
+
+      // Skip header lines
+      for (let i = 2; i < lines.length; i++) {
+        const line = lines[i].trim();
+
+        // Stop when we hit the compound filters section or empty line
+        if (line === "Compound_filters" || line === "") break;
+
+        // Skip empty lines or lines with "None" filter type
+        if (line.includes("None")) continue;
+
+        // Parse space-separated values
+        const parts = line.split(/\s+/);
+        if (parts.length >= 8) {
+          // We need at least 8 parts for a valid filter
+
+          const band = new REWEQBand();
+          band.Enabled = parts[1].toLowerCase() === "true";
+          band.FilterType =
+            parts[3] === "PK" ? REWEQFilterType.PK : REWEQFilterType.NO;
+          band.FilterFreq = parseFloatWithSeparator(parts[4], decimalSeparator);
+          band.FilterGain = parseFloatWithSeparator(parts[5], decimalSeparator);
+          band.FilterQ = parseFloatWithSeparator(parts[6], decimalSeparator);
+
+          band.FilterBWOct = roundToNumber(REWEQ.Q2BWOct(band.FilterQ), 4);
+
+          // Calculate bandwidth in Hz
+          band.FilterBWHz = roundToNumber(
+            REWEQ.Q2BWHz(band.FilterFreq, band.FilterQ),
+            4
+          );
+
+          // Verify against file's bandwidth value if available
+          if (bandwidthColumnIndex !== -1 && parts[bandwidthColumnIndex]) {
+            const fileBandwidth = parseFloatWithSeparator(
+              parts[bandwidthColumnIndex],
+              decimalSeparator
+            );
+
+            // Check if calculated bandwidth matches file's bandwidth within a small margin of error
+            const marginOfError = 0.01; // 1% error margin
+            const difference =
+              Math.abs(fileBandwidth - band.FilterBWHz) / fileBandwidth;
+            if (difference > marginOfError) {
+              console.warn(
+                `Bandwidth mismatch for filter at ${band.FilterFreq}Hz: ` +
+                  `calculated ${band.FilterBWHz.toFixed(2)}Hz vs ` +
+                  `file ${fileBandwidth.toFixed(2)}Hz`
+              );
+            }
+          }
+
+          filters.EqBands.push(band);
+        }
+      }
+      return filters;
+    }
+
+    // Old format parsing logic
     let regexpPattern = /^Filter\s+\d+/;
     let usingBWOct = false;
-
-    const lines = fileContent.split(/\r?\n/);
 
     for (const line of lines) {
       if (line.startsWith("Equaliser:")) {
@@ -109,13 +178,12 @@ export class REWEQ {
       }
 
       if (line.match(/^Filter\s+\d+:/)) {
-        const sanitizedLine = line.replace(/\u00A0/g, ""); // Remove non-breaking spaces
+        const sanitizedLine = line.replace(String.fromCharCode(160), " "); // Replace non-breaking spaces with regular spaces
 
         if (/^Filter\s+\d+:\s+ON\s+None/.test(sanitizedLine)) continue; // Skip if filter type is "None"
 
         const match = sanitizedLine.match(regexpPattern);
         if (match) {
-          filterCount++;
           const enabled = match[1].trim() === "ON";
           const type = match[2].trim();
           const freq = match[3].trim();
@@ -138,6 +206,11 @@ export class REWEQ {
             band.FilterQ = parseFloatWithSeparator(q, decimalSeparator);
             band.FilterBWOct = roundToNumber(REWEQ.Q2BWOct(band.FilterQ), 4);
           }
+
+          band.FilterBWHz = roundToNumber(
+            REWEQ.Q2BWHz(band.FilterFreq, band.FilterQ),
+            4
+          );
 
           filters.EqBands.push(band);
         } else {
@@ -174,5 +247,19 @@ export class REWEQ {
   static BWOct2Q(bwOct: number): number {
     // Calculate the Q factor using the formula
     return Math.sqrt(Math.pow(2, bwOct)) / (Math.pow(2, bwOct) - 1);
+  }
+
+  /**
+   * Calculate bandwidth in Hz from center frequency and Q factor
+   * BW = Fc / Q where:
+   * - Fc is the center frequency in Hz
+   * - Q is the quality factor
+   *
+   * @param freq - Center frequency in Hz
+   * @param q - Q factor
+   * @returns Bandwidth in Hz
+   */
+  static Q2BWHz(freq: number, q: number): number {
+    return freq / q;
   }
 }

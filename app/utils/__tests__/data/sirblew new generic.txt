@@ -1,0 +1,25 @@
+Generic
+Number Enabled Control Type Frequency(Hz) Gain(dB) Q Bandwidth(Hz) TargetT60(ms) Shape Slope_dB/oct Frequency2(Hz) Q2 Slope2_dB/oct
+1 True Auto PK 52.00 -7.80 3.760 13.83
+2 True Auto PK 63.00 -4.80 6.900 9.13
+3 True Auto PK 95.00 11.50 6.100 15.57
+4 True Auto PK 116.0 -17.90 6.040 19.21
+5 True Auto PK 159.0 12.00 7.500 21.20
+6 True Auto PK 174.0 -13.40 5.270 33.02
+7 True Auto PK 208.0 6.90 7.500 27.73
+8 True Auto PK 916.0 -4.40 5.460 167.8
+9 True Auto PK 1315 3.50 4.810 273.4
+10 True Auto PK 2091 -3.30 4.910 425.9
+11 True Auto None
+12 True Auto None
+13 True Auto None
+14 True Auto None
+15 True Auto None
+16 True Auto None
+17 True Auto None
+18 True Auto None
+19 True Auto None
+20 True Auto None
+Compound_filters
+1 True Auto None
+2 True Auto None
