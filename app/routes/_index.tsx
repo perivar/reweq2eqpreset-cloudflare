@@ -14,7 +14,6 @@ import {
 } from "~/utils/REWToFabfilter";
 import { Upload } from "lucide-react";
 import { useDropzone } from "react-dropzone";
-import { useTranslation } from "react-i18next";
 
 import { Button } from "~/components/ui/button";
 import {
@@ -34,7 +33,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
-import { useToast } from "~/components/ui/use-toast";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const t = await i18next.getFixedT(request);
@@ -56,9 +54,6 @@ type PresetType =
   | "Generic";
 
 export default function Index() {
-  const { t } = useTranslation();
-  const { toast } = useToast();
-
   const [rewFilters, setREWFilters] = useState<REWEQFilters | null>();
   const [decimalSeparator, setDecimalSeparator] = useState(
     getDecimalSeparator()

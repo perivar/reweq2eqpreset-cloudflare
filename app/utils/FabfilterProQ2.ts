@@ -55,6 +55,20 @@ export class ProQ2Band {
     this.Slope = ProQ2Slope.Slope24dB_oct;
     this.StereoPlacement = ProQ2StereoPlacement.Stereo;
   }
+
+  toString(): string {
+    const shapeStr = ProQ2Shape[this.Shape];
+    const slopeStr = ProQ2Slope[this.Slope];
+    const placementStr = ProQ2StereoPlacement[this.StereoPlacement];
+    const channelStr = ProQ2ChannelMode[this.ChannelMode];
+
+    return (
+      `${this.Enabled ? "Enabled" : "Disabled"} | ${channelStr} | ${placementStr} | ` +
+      `${shapeStr} @ ${this.Frequency.toFixed(1)} Hz | ` +
+      `Gain: ${this.Gain.toFixed(1)} dB | Q: ${this.Q.toFixed(2)} | ` +
+      `${slopeStr}`
+    );
+  }
 }
 
 export class FabfilterProQ2 implements FabfilterProQBase {

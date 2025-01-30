@@ -43,7 +43,10 @@ export default function ResponsiveNavBar() {
 
   const navBrand = t("title");
 
-  const navItems: NavItem[] = [{ title: "About", to: "/about" }];
+  const navItems: NavItem[] = [
+    { title: "Verify", to: "/verify" },
+    { title: "About", to: "/about" },
+  ];
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">

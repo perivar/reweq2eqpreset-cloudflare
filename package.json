@@ -14,7 +14,7 @@
     "lint-fix": "eslint '**/*.{js,jsx,ts,tsx}' --fix",
     "start": "wrangler pages dev ./build/client",
     "test": "jest --watchAll",
-    "typecheck": "tsc",
+    "tsc": "tsc --build --verbose",
     "typegen": "wrangler types",
     "preview": "npm run build && wrangler pages dev",
     "cf-typegen": "wrangler types"

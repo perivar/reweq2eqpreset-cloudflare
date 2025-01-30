@@ -62,6 +62,21 @@ export class ProQ3Band {
     this.Slope = ProQ3Slope.Slope24dB_oct;
     this.StereoPlacement = ProQ3StereoPlacement.Stereo;
   }
+
+  toString(): string {
+    const shapeStr = ProQ3Shape[this.Shape];
+    const slopeStr = ProQ3Slope[this.Slope];
+    const placementStr = ProQ3StereoPlacement[this.StereoPlacement];
+
+    return (
+      `${this.Enabled ? "Enabled" : "Disabled"} | ${placementStr} | ` +
+      `${shapeStr} @ ${this.Frequency.toFixed(1)} Hz | ` +
+      `Gain: ${this.Gain.toFixed(1)} dB | Q: ${this.Q.toFixed(2)} | ` +
+      `${slopeStr} | ` +
+      `Dynamic Range: ${this.DynamicRange.toFixed(1)} dB | ` +
+      `Threshold: ${this.DynamicThreshold === 1 ? "Auto" : this.DynamicThreshold.toFixed(1) + " dB"}`
+    );
+  }
 }
 
 export class FabfilterProQ3 implements FabfilterProQBase {
