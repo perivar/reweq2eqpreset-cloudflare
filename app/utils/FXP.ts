@@ -276,7 +276,6 @@ export class FXP {
       if (writeXMLChunkData) {
         bf.binaryWriter?.writeString(xmlChunkData); // ChunkData, <ChunkSize>
       } else {
-        // Even though the main FXP is BigEndian format the preset chunk is saved in LittleEndian format
         bf.binaryWriter?.writeBytes(programSet.ChunkData);
       }
     } else if (content.FxMagic === "FxCk") {
@@ -396,7 +395,6 @@ export class FXP {
         bf.binaryReader?.readString(28).replace(/\0+$/, "") || "";
       programSet.ChunkSize = bf.binaryReader?.readInt32() || 0;
 
-      // Even though the main FXP is BigEndian format the preset chunk is saved in LittleEndian format
       programSet.ChunkData =
         bf.binaryReader?.readBytes(programSet.ChunkSize) ||
         new Uint8Array(0);
