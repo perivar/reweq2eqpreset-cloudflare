@@ -1,5 +1,78 @@
 {
   "welcome_to": "Welcome to",
   "title": "REW2Preset",
-  "description": "REW to Preset Generator"
+  "description": "REW to Preset Generator",
+  "fileInfo": {
+    "band": "Band",
+    "bandDetails": "Band Details",
+    "bands": "Bands",
+    "detectedFormat": "Detected Format",
+    "detectedType": "Detected Type",
+    "disabled": "Disabled",
+    "enabled": "Enabled",
+    "fileName": "File Name",
+    "frequency": "Frequency",
+    "gain": "Gain",
+    "q": "Q",
+    "size": "Size",
+    "slope": "Slope",
+    "sourceFormat": "Source Format",
+    "stereoPlacement": "Stereo Placement",
+    "title": "File Information",
+    "type": "Type",
+    "unknownFormat": "Unknown Format",
+    "bandWidth": "Bandwidth"
+  },
+  "card": {
+    "title": "REW 2 Preset Generator",
+    "description": "Upload a REW EQ Preset file and convert to different types of EQ presets"
+  },
+  "labels": {
+    "presetType": "Preset Type to generate",
+    "decimalSeparator": "Decimal Separator",
+    "selectPlaceholder": "Select preset type"
+  },
+  "presetTypes": {
+    "generic": "Generic Text File",
+    "reaEQ": "ReaEQ",
+    "fabFilterProQ1": "FabFilterProQ1",
+    "fabFilterProQ2": "FabFilterProQ2",
+    "fabFilterProQ3": "FabFilterProQ3"
+  },
+  "dropzone": {
+    "dropHere": "Drop the file here",
+    "dragOrClick": "Drag and drop a file here, or click to select a file"
+  },
+  "files": "Files:",
+  "filterInfo": {
+    "title": "Filter Information:",
+    "totalBands": "Total bands:",
+    "enabledBands": "Enabled bands:"
+  },
+  "button": {
+    "generateDownload": "Generate and Download Preset"
+  },
+  "errors": {
+    "fileReadError": "Could not read file! Check file and make sure you are using the correct decimal separator",
+    "generationError": "An error occurred while generating the FXP file. Please try again.",
+    "unsupportedFormat": "Unsupported file format. Please upload a .ffp or .fxp file.",
+    "unknownFFPFormat": "Unknown FFP file format: {{header}}",
+    "failedReadFFP": "Failed to read FFP file",
+    "failedReadReaEQ": "Failed to read ReaEQ FXP file",
+    "errorReadingFile": "Error reading file: {{error}}",
+    "unknownError": "Unknown error"
+  },
+  "verify": {
+    "card": {
+      "title": "EQ Preset Verifier",
+      "description": "Upload a FabFilter FFP or ReaEQ FXP preset file to verify and view its contents"
+    },
+    "dropzone": {
+      "dropHere": "Drop the file here",
+      "dragOrClick": "Drag and drop a .ffp or .fxp file here, or click to select a file"
+    },
+    "files": "Files:",
+    "detectedPreset": "Detected Preset Type:",
+    "filterData": "Filter Data:"
+  }
 }

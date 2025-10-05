@@ -8,6 +8,7 @@ import { FabfilterProQ3 } from "~/utils/FabfilterProQ3";
 import { ReaEQ, ReaEQBand } from "~/utils/ReaEQ";
 import { Upload } from "lucide-react";
 import { useDropzone } from "react-dropzone";
+import { useTranslation } from "react-i18next";
 
 import {
   Card,
@@ -31,6 +32,7 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 };
 
 export default function Verify() {
+  const { t } = useTranslation();
   const [filterData, setFilterData] = useState<string | null>();
   const [detectedPreset, setDetectedPreset] = useState<string | null>();
   const [error, setError] = useState<string | null>(null);
@@ -50,9 +52,7 @@ export default function Verify() {
           const isFXP = file.name.toLowerCase().endsWith(".fxp");
 
           if (!isFFP && !isFXP) {
-            throw new Error(
-              "Unsupported file format. Please upload a .ffp or .fxp file."
-            );
+            throw new Error(t("errors.unsupportedFormat"));
           }
 
           if (isFFP) {
@@ -75,7 +75,7 @@ export default function Verify() {
                 presetType = "FabFilter Pro-Q 3";
                 break;
               default:
-                throw new Error(`Unknown FFP file format: ${header}`);
+                throw new Error(t("errors.unknownFFPFormat", { header }));
             }
 
             if (filters.ReadFFP(data)) {
@@ -86,7 +86,7 @@ export default function Verify() {
               );
               setDetectedPreset(presetType);
             } else {
-              throw new Error("Failed to read FFP file");
+              throw new Error(t("errors.failedReadFFP"));
             }
           } else {
             // Handle ReaEQ FXP file
@@ -100,12 +100,15 @@ export default function Verify() {
               );
               setDetectedPreset("ReaEQ");
             } else {
-              throw new Error("Failed to read ReaEQ FXP file");
+              throw new Error(t("errors.failedReadReaEQ"));
             }
           }
         } catch (err) {
           setError(
-            `Error reading file: ${err instanceof Error ? err.message : "Unknown error"}`
+            t("errors.errorReadingFile", {
+              error:
+                err instanceof Error ? err.message : t("errors.unknownError"),
+            })
           );
           console.error(err);
         }
@@ -132,11 +135,8 @@ export default function Verify() {
   return (
     <Card className="mx-auto mt-6 w-full p-2">
       <CardHeader>
-        <CardTitle>EQ Preset Verifier</CardTitle>
-        <CardDescription>
-          Upload a FabFilter FFP or ReaEQ FXP preset file to verify and view its
-          contents
-        </CardDescription>
+        <CardTitle>{t("verify.card.title")}</CardTitle>
+        <CardDescription>{t("verify.card.description")}</CardDescription>
       </CardHeader>
 
       <CardContent>
@@ -150,21 +150,21 @@ export default function Verify() {
             <Upload className="mx-auto size-12 text-gray-400" />
             <p className="mt-2 text-sm text-gray-500">
               {isDragActive
-                ? "Drop the file here"
-                : "Drag and drop a .ffp or .fxp file here, or click to select a file"}
+                ? t("verify.dropzone.dropHere")
+                : t("verify.dropzone.dragOrClick")}
             </p>
           </div>
           <aside>
-            <h4 className="text-base">Files:</h4>
+            <h4 className="text-base">{t("verify.files")}</h4>
             <ul className="text-sm">{files}</ul>
           </aside>
           {detectedPreset && filterData && (
             <div className="mt-4">
-              <h4 className="text-base">Detected Preset Type:</h4>
+              <h4 className="text-base">{t("verify.detectedPreset")}</h4>
               <p className="mt-1 text-sm text-muted-foreground">
                 {detectedPreset}
               </p>
-              <h4 className="mt-4 text-base">Filter Data:</h4>
+              <h4 className="mt-4 text-base">{t("verify.filterData")}</h4>
               <pre className="mt-2 overflow-x-auto whitespace-pre-wrap break-words rounded bg-secondary p-4 text-sm">
                 {filterData}
               </pre>

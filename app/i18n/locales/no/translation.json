@@ -1,5 +1,78 @@
 {
   "welcome_to": "Velkommen",
   "title": "REW2Preset",
-  "description": "REW til preset generator"
+  "description": "REW til preset generator",
+  "fileInfo": {
+    "band": "Bånd",
+    "bandDetails": "Bånddetaljer",
+    "bands": "Bånd",
+    "detectedFormat": "Oppdaget Format",
+    "detectedType": "Oppdaget type",
+    "disabled": "Deaktivert",
+    "enabled": "Aktivert",
+    "fileName": "Filnavn",
+    "frequency": "Frekvens",
+    "gain": "Forsterkning",
+    "q": "Q",
+    "size": "Størrelse",
+    "slope": "Stigning",
+    "sourceFormat": "Kildeformat",
+    "stereoPlacement": "Stereoplassering",
+    "title": "Filinformasjon",
+    "type": "Type",
+    "unknownFormat": "Ukjent format",
+    "bandWidth": "Båndbredde"
+  },
+  "card": {
+    "title": "REW 2 Preset Generator",
+    "description": "Last opp en REW EQ Preset-fil og konverter til forskjellige typer EQ-presets"
+  },
+  "labels": {
+    "presetType": "Presettype å generere",
+    "decimalSeparator": "Desimalskilletegn",
+    "selectPlaceholder": "Velg presettype"
+  },
+  "presetTypes": {
+    "generic": "Generisk tekstfil",
+    "reaEQ": "ReaEQ",
+    "fabFilterProQ1": "FabFilterProQ1",
+    "fabFilterProQ2": "FabFilterProQ2",
+    "fabFilterProQ3": "FabFilterProQ3"
+  },
+  "dropzone": {
+    "dropHere": "Slipp filen her",
+    "dragOrClick": "Dra og slipp en fil her, eller klikk for å velge en fil"
+  },
+  "files": "Filer:",
+  "filterInfo": {
+    "title": "Filterinformasjon:",
+    "totalBands": "Totalt antall bånd:",
+    "enabledBands": "Aktiverte bånd:"
+  },
+  "button": {
+    "generateDownload": "Generer og last ned preset"
+  },
+  "errors": {
+    "fileReadError": "Kunne ikke lese filen! Sjekk filen og forsikre deg om at du bruker riktig desimalskilletegn",
+    "generationError": "Det oppstod en feil under generering av FXP-filen. Vennligst prøv igjen.",
+    "unsupportedFormat": "Ustøttet filformat. Vennligst last opp en .ffp eller .fxp fil.",
+    "unknownFFPFormat": "Ukjent FFP filformat: {{header}}",
+    "failedReadFFP": "Kunne ikke lese FFP fil",
+    "failedReadReaEQ": "Kunne ikke lese ReaEQ FXP fil",
+    "errorReadingFile": "Feil ved lesing av fil: {{error}}",
+    "unknownError": "Ukjent feil"
+  },
+  "verify": {
+    "card": {
+      "title": "EQ Preset Verifier",
+      "description": "Last opp en FabFilter FFP eller ReaEQ FXP preset-fil for å verifisere og se innholdet"
+    },
+    "dropzone": {
+      "dropHere": "Slipp filen her",
+      "dragOrClick": "Dra og slipp en .ffp eller .fxp fil her, eller klikk for å velge en fil"
+    },
+    "files": "Filer:",
+    "detectedPreset": "Oppdaget Preset Type:",
+    "filterData": "Filter Data:"
+  }
 }

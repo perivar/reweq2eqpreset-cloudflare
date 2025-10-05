@@ -12,8 +12,9 @@ import {
   toFabfilterProQ2,
   toFabfilterProQ3,
 } from "~/utils/REWToFabfilter";
-import { Upload } from "lucide-react";
+import { ChevronDown, ChevronUp, Upload } from "lucide-react";
 import { useDropzone } from "react-dropzone";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "~/components/ui/button";
 import {
@@ -24,6 +25,11 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "~/components/ui/collapsible";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import {
@@ -33,6 +39,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
+import { EqualizerBandTable } from "~/components/EqualizerBandTable";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const t = await i18next.getFixedT(request);
@@ -54,12 +61,19 @@ type PresetType =
   | "Generic";
 
 export default function Index() {
+  const { t } = useTranslation();
   const [rewFilters, setREWFilters] = useState<REWEQFilters | null>();
+  const [rewFilterInfo, setRewFilterInfo] = useState<{
+    totalBands: number;
+    enabledBands: number;
+  } | null>(null);
   const [decimalSeparator, setDecimalSeparator] = useState(
     getDecimalSeparator()
   );
   const [presetType, setPresetType] = useState<PresetType>("Generic");
   const [error, setError] = useState<string | null>(null);
+  const [hoveredFrequency, setHoveredFrequency] = useState<number | null>(null);
+  const [isBandDetailsOpen, setIsBandDetailsOpen] = useState(true); // State for band details collapsible
 
   const onDrop = (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
@@ -73,10 +87,17 @@ export default function Index() {
           decimalSeparator
         );
         setREWFilters(filters);
-        if (!filters)
-          setError(
-            "Could not read file! Check file and make sure you are using the correct decimal separator"
-          );
+
+        if (filters) {
+          const totalBands = filters.EqBands.length;
+          const enabledBands = filters.EqBands.filter(
+            band => band.Enabled
+          ).length;
+          setRewFilterInfo({ totalBands, enabledBands });
+        } else {
+          setRewFilterInfo(null);
+          setError(t("errors.fileReadError"));
+        }
       };
       reader.readAsText(file);
     }
@@ -142,7 +163,7 @@ export default function Index() {
 
       if (!presetData) throw new Error("Failed generating preset");
 
-      const blob = new Blob([presetData], {
+      const blob = new Blob([presetData as BlobPart], {
         type: "application/octet-stream",
       });
       const url = URL.createObjectURL(blob);
@@ -154,44 +175,49 @@ export default function Index() {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
     } catch (err) {
-      setError(
-        "An error occurred while generating the FXP file. Please try again."
-      );
+      setError(t("errors.generationError"));
       console.error(err);
     }
   };
 
   return (
-    <Card className="mx-auto mt-6 w-full max-w-md">
+    <Card className="mx-auto mt-6 w-full max-w-6xl">
       <CardHeader>
-        <CardTitle>REW 2 Preset Generator</CardTitle>
-        <CardDescription>
-          Upload a REW EQ Preset file and convert to different types of EQ
-          presets
-        </CardDescription>
+        <CardTitle>{t("card.title")}</CardTitle>
+        <CardDescription>{t("card.description")}</CardDescription>
       </CardHeader>
 
       <CardContent>
         <div className="mb-4 space-y-4">
           <div>
-            <Label htmlFor="preset-type">Preset Type to generate</Label>
+            <Label htmlFor="preset-type">{t("labels.presetType")}</Label>
             <Select
               onValueChange={(value: PresetType) => setPresetType(value)}
               defaultValue={presetType}>
               <SelectTrigger id="preset-type">
-                <SelectValue placeholder="Select preset type" />
+                <SelectValue placeholder={t("labels.selectPlaceholder")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Generic">Generic Text File</SelectItem>
-                <SelectItem value="ReaEQ">ReaEQ</SelectItem>
-                <SelectItem value="FabFilterProQ1">FabFilterProQ1</SelectItem>
-                <SelectItem value="FabFilterProQ2">FabFilterProQ2</SelectItem>
-                <SelectItem value="FabFilterProQ3">FabFilterProQ3</SelectItem>
+                <SelectItem value="Generic">
+                  {t("presetTypes.generic")}
+                </SelectItem>
+                <SelectItem value="ReaEQ">{t("presetTypes.reaEQ")}</SelectItem>
+                <SelectItem value="FabFilterProQ1">
+                  {t("presetTypes.fabFilterProQ1")}
+                </SelectItem>
+                <SelectItem value="FabFilterProQ2">
+                  {t("presetTypes.fabFilterProQ2")}
+                </SelectItem>
+                <SelectItem value="FabFilterProQ3">
+                  {t("presetTypes.fabFilterProQ3")}
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div>
-            <Label htmlFor="decimal-separator">Decimal Separator</Label>
+            <Label htmlFor="decimal-separator">
+              {t("labels.decimalSeparator")}
+            </Label>
             <Input
               id="decimal-separator"
               value={decimalSeparator}
@@ -211,14 +237,56 @@ export default function Index() {
             <Upload className="mx-auto size-12 text-gray-400" />
             <p className="mt-2 text-sm text-gray-500">
               {isDragActive
-                ? "Drop the file here"
-                : "Drag and drop a file here, or click to select a file"}
+                ? t("dropzone.dropHere")
+                : t("dropzone.dragOrClick")}
             </p>
           </div>
           <aside>
-            <h4 className="text-base">Files:</h4>
+            <h4 className="text-base">{t("files")}</h4>
             <ul className="text-sm">{files}</ul>
           </aside>
+          {rewFilterInfo && (
+            <div className="mt-4 rounded-lg border border-accent-foreground bg-accent p-3">
+              <h4 className="text-base font-medium text-accent-foreground">
+                {t("filterInfo.title")}
+              </h4>
+              <p className="text-sm text-primary">
+                {t("filterInfo.totalBands")} {rewFilterInfo.totalBands}
+                {" | "}
+                {t("filterInfo.enabledBands")} {rewFilterInfo.enabledBands}
+              </p>
+            </div>
+          )}
+          {rewFilters && (
+            <div className="mt-4 overflow-x-auto">
+              <Collapsible
+                open={isBandDetailsOpen}
+                onOpenChange={setIsBandDetailsOpen}>
+                <CollapsibleTrigger asChild>
+                  <div className="flex items-center justify-between">
+                    <h4
+                      className={`text-sm font-semibold ${isBandDetailsOpen ? "font-bold" : ""}`}>
+                      {t("fileInfo.bandDetails")}:
+                    </h4>
+                    <Button variant="outline" size="sm" className="w-9 p-0">
+                      {isBandDetailsOpen ? (
+                        <ChevronUp className="size-4" />
+                      ) : (
+                        <ChevronDown className="size-4" />
+                      )}
+                      <span className="sr-only">Toggle</span>
+                    </Button>
+                  </div>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <EqualizerBandTable
+                    filters={rewFilters}
+                    hoveredFrequency={hoveredFrequency}
+                  />
+                </CollapsibleContent>
+              </Collapsible>
+            </div>
+          )}
         </div>
       </CardContent>
       <CardFooter className="flex flex-col items-stretch">
@@ -227,7 +295,7 @@ export default function Index() {
           onClick={generateFXP}
           className="w-full"
           disabled={!rewFilters}>
-          Generate and Download Preset
+          {t("button.generateDownload")}
         </Button>
         {error && (
           <p className="mt-2 text-center text-red-500" role="alert">
