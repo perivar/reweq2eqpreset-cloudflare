@@ -396,8 +396,7 @@ export class FXP {
       programSet.ChunkSize = bf.binaryReader?.readInt32() || 0;
 
       programSet.ChunkData =
-        bf.binaryReader?.readBytes(programSet.ChunkSize) ||
-        new Uint8Array(0);
+        bf.binaryReader?.readBytes(programSet.ChunkSize) || new Uint8Array(0);
 
       // Read the XML chunk into memory
       try {

@@ -82,21 +82,35 @@ export class REWEQ {
 
     const lines = fileContent.split(/\r?\n/);
 
-    // Check if this is the new format
+    let headerLineOffset = 0;
+    if (lines[0].trim() === "Notes:") {
+      headerLineOffset = 1;
+    }
+    // Check if this is the new format by verifying key column names
     const isNewFormat =
-      lines[0].trim() === "Generic" &&
-      lines.length > 1 &&
-      lines[1].includes("Number Enabled Control Type Frequency");
+      lines[headerLineOffset].trim() === "Generic" &&
+      lines.length > headerLineOffset + 1 &&
+      lines[headerLineOffset + 1].includes("Number") &&
+      lines[headerLineOffset + 1].includes("Enabled") &&
+      lines[headerLineOffset + 1].includes("Type") &&
+      lines[headerLineOffset + 1].includes("Frequency");
 
     if (isNewFormat) {
-      // Get column indices from header
-      const headers = lines[1].split(/\s+/);
+      // Get the header line
+      const headerLine = lines[headerLineOffset + 1];
+      // Determine delimiter: if header contains commas, use comma with optional spaces, else use whitespace
+      const delimiter = headerLine.includes(",") ? /,\s*/ : /\s+/;
+      // Split header with delimiter, trim each part, and filter out empty strings
+      const headers = headerLine
+        .split(delimiter)
+        .map(h => h.trim())
+        .filter(h => h !== "");
       const bandwidthColumnIndex = headers.findIndex(
         h => h === "Bandwidth(Hz)"
       );
 
       // Skip header lines
-      for (let i = 2; i < lines.length; i++) {
+      for (let i = headerLineOffset + 2; i < lines.length; i++) {
         const line = lines[i].trim();
 
         // Stop when we hit the compound filters section or empty line
@@ -105,8 +119,11 @@ export class REWEQ {
         // Skip empty lines or lines with "None" filter type
         if (line.includes("None")) continue;
 
-        // Parse space-separated values
-        const parts = line.split(/\s+/);
+        // Parse values with the same delimiter, trim, and filter empty
+        const parts = line
+          .split(delimiter)
+          .map(p => p.trim())
+          .filter(p => p !== "");
         if (parts.length >= 8) {
           // We need at least 8 parts for a valid filter
 
@@ -127,7 +144,11 @@ export class REWEQ {
           );
 
           // Verify against file's bandwidth value if available
-          if (bandwidthColumnIndex !== -1 && parts[bandwidthColumnIndex]) {
+          if (
+            bandwidthColumnIndex !== -1 &&
+            bandwidthColumnIndex < parts.length &&
+            parts[bandwidthColumnIndex]
+          ) {
             const fileBandwidth = parseFloatWithSeparator(
               parts[bandwidthColumnIndex],
               decimalSeparator

@@ -18,7 +18,7 @@ test("Convert2ReaEQ", () => {
   const fxp = filters && Convert2ReaEQ(filters);
   const uint8ArrayWrite = fxp?.writeFile();
 
-  // if (DO_DEBUG_OBJECT) console.log(JSON.stringify(actual, null, 2));
+  // if (DO_DEBUG_OBJECT) console.log(JSON.stringify(filters, null, 2));
 
   const destFilePath = path.join(
     __dirname,
@@ -30,9 +30,11 @@ test("Convert2ReaEQ", () => {
   if (uint8ArrayWrite) {
     // const filePathWrite = path.join(
     //   __dirname,
-    //   "data/genelec eq filters 6 Generic max boost_tmp.fxp"
+    //   "data",
+    //   "ReaEQ",
+    //   "genelec eq filters 6 Generic max boost_tmp.fxp"
     // );
-    // fs.writeFileSync(filePathWrite, uint8Array);
+    // fs.writeFileSync(filePathWrite, uint8ArrayWrite);
 
     expect(areTypedArraysEqual(uint8ArrayRead, uint8ArrayWrite)).toBe(true);
   }
